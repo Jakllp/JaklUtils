@@ -1,0 +1,4 @@
+name: JaklUtils
+main: de.jakllp.jaklutils.main.JaklUtils
+version: ${project.version}
+api-version: 1.13
