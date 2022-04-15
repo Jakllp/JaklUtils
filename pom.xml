@@ -92,16 +92,7 @@
       </repository>
       <repository>
         <id>jakl</id>
-        <url>https://repo.jakllp.com</url>
-      </repository>
-      <repository>
-        <id>mypet</id>
-        <url>https://repo.mypet-plugin.de</url>
-      </repository>
-      <!-- Has datafixerupper -->
-      <repository>
-        <id>lumine.io</id>
-        <url>https://mvn.lumine.io/repository/maven-public/</url>
+        <url>https://repo.jakllp.com/snapshots</url>
       </repository>
     </repositories>
 
