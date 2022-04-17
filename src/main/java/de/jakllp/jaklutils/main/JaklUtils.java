@@ -1,5 +1,9 @@
 package de.jakllp.jaklutils.main;
 
+import de.jakllp.jaklutils.commands.CommandAbortLeash;
+import de.jakllp.jaklutils.commands.CommandMakeLeash;
+import de.jakllp.jaklutils.commands.CommandSilenceMe;
+import de.jakllp.jaklutils.commands.CommandToggleLeash;
 import de.jakllp.jaklutils.helpers.PersistencyHelper;
 import de.jakllp.jaklutils.listeners.LeashListener;
 import de.jakllp.jaklutils.logging.Colors;
@@ -14,13 +18,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JaklUtils extends JavaPlugin {
     public static JaklUtils plugin;
@@ -28,12 +32,11 @@ public class JaklUtils extends JavaPlugin {
     public static CustomLogger logger = null;
     public static Colors colors = null;
     public static PersistencyHelper persistent = null;
+    public static List<UUID> silent = new ArrayList();
 
     @Override
     public void onEnable() {
         plugin = this;
-        leashListener = new LeashListener(this);
-        persistent = new PersistencyHelper();
         logger = new CustomLogger(getServer().getConsoleSender(), getLogger());
         colors = new Colors("&c",
                 "&7",
@@ -41,8 +44,15 @@ public class JaklUtils extends JavaPlugin {
                 "&4",
                 "&1");
 
-        //ToDo: Respawn leashknots
-        //logger.info("Respawned all Leashknots");
+        leashListener = new LeashListener(this);
+        persistent = new PersistencyHelper(plugin);
+
+        // register commands
+        //getCommand("JaklUtils").setExecutor(new CommandHelp());
+        getCommand("abortleash").setExecutor(new CommandAbortLeash());
+        getCommand("jaklsilent").setExecutor(new CommandSilenceMe());
+        getCommand("makeleash").setExecutor(new CommandMakeLeash());
+        getCommand("toggleleash").setExecutor(new CommandToggleLeash());
 
         logger.info("JaklUtils loaded!");
     }
@@ -51,5 +61,12 @@ public class JaklUtils extends JavaPlugin {
     public void onDisable() {
         persistent.savePersistent();
         //ToDo: Save Leashknots
+    }
+
+    public static boolean isSilent(Player player) {
+        if (silent.contains(player.getUniqueId())) {
+            return true;
+        }
+        return false;
     }
 }

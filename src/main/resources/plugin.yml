@@ -2,3 +2,14 @@ name: JaklUtils
 main: de.jakllp.jaklutils.main.JaklUtils
 version: ${project.version}
 api-version: 1.13
+commands:
+  JaklUtils:
+    description: Help for all Commands
+  makeLeash:
+    description: Creates a point of a Leash
+  toggleLeash:
+    description: Toggles Fence-Leashing
+  jaklsilent:
+    description: Silences unimportant messages from this plugin
+  abortleash:
+    description: Abort a leash-setting
