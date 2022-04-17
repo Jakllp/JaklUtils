@@ -1,6 +1,5 @@
 package de.jakllp.jaklutils.commands;
 
-import de.jakllp.jaklutils.helpers.StatValue;
 import de.jakllp.jaklutils.leashing.LeashController;
 import de.jakllp.jaklutils.main.JaklUtils;
 import org.bukkit.command.Command;

@@ -1,6 +1,6 @@
 package de.jakllp.jaklutils.commands;
 
-import de.jakllp.jaklutils.helpers.StatValue;
+import de.jakllp.jaklutils.helpers.customdatatypes.StatValue;
 import de.jakllp.jaklutils.main.JaklUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

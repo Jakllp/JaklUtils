@@ -1,27 +1,15 @@
 package de.jakllp.jaklutils.listeners;
 
-import de.jakllp.jaklutils.helpers.StatValue;
+import de.jakllp.jaklutils.helpers.customdatatypes.StatValue;
 import de.jakllp.jaklutils.leashing.LeashController;
-import de.jakllp.jaklutils.logging.Colors;
 import de.jakllp.jaklutils.main.JaklUtils;
-import net.minecraft.network.protocol.game.ClientboundSetEntityLinkPacket;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_18_R2.CraftEffect;
-import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
-
-import java.lang.reflect.Constructor;
 
 public class LeashListener implements Listener {
     private JaklUtils plugin;
@@ -96,4 +84,5 @@ public class LeashListener implements Listener {
             return;
         }
     }
+    //TODO: Add listener for frickin Leash-Hitch-Breaking
 }

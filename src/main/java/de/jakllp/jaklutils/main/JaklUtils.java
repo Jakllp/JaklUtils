@@ -60,7 +60,6 @@ public class JaklUtils extends JavaPlugin {
     @Override
     public void onDisable() {
         persistent.savePersistent();
-        //ToDo: Save Leashknots
     }
 
     public static boolean isSilent(Player player) {

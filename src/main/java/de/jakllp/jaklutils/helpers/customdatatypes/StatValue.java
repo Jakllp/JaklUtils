@@ -1,4 +1,4 @@
-package de.jakllp.jaklutils.helpers;
+package de.jakllp.jaklutils.helpers.customdatatypes;
 
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;

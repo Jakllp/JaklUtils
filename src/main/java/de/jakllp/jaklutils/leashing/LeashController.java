@@ -1,12 +1,10 @@
 package de.jakllp.jaklutils.leashing;
 
-import de.jakllp.jaklutils.helpers.StatValue;
+import de.jakllp.jaklutils.helpers.customdatatypes.StatValue;
 import de.jakllp.jaklutils.main.JaklUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
-
-import java.util.UUID;
 
 public class LeashController {
     public static boolean createFirstPoint(Player player) {
@@ -177,4 +175,6 @@ public class LeashController {
         }
         return true;
     }
+
+    //TODO: Need to save bat pairs differently somehow... Metadata isn't persistent
 }

@@ -1,10 +1,9 @@
 package de.jakllp.jaklutils.helpers;
 
+import de.jakllp.jaklutils.helpers.customdatatypes.SerializableLocation;
 import de.jakllp.jaklutils.leashing.LeashController;
 import de.jakllp.jaklutils.main.JaklUtils;
-import org.bukkit.Location;
 import org.bukkit.entity.LeashHitch;
-import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -103,4 +102,6 @@ public class PersistencyHelper {
         this.leashKnotList.add(new SerializableLocation(hitch.getLocation()));
     }
     public void deleteHitch(LeashHitch hitch) { this.leashKnotList.remove(new SerializableLocation(hitch.getLocation())); }
+
+    //TODO: Add Persistency for metadata or something... Maybe save the pairs
 }
