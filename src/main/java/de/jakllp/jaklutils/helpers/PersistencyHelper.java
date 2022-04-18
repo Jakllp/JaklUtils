@@ -1,19 +1,21 @@
 package de.jakllp.jaklutils.helpers;
 
+import de.jakllp.jaklutils.helpers.customdatatypes.BatContainer;
 import de.jakllp.jaklutils.helpers.customdatatypes.SerializableLocation;
 import de.jakllp.jaklutils.leashing.LeashController;
 import de.jakllp.jaklutils.main.JaklUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LeashHitch;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class PersistencyHelper {
     private static JaklUtils plugin;
     private List<SerializableLocation> leashKnotList = new ArrayList<>();
-
 
     public PersistencyHelper(JaklUtils plugin) {
         this.plugin = plugin;
@@ -24,8 +26,11 @@ public class PersistencyHelper {
         File fd = new File(this.plugin.getDataFolder() + "/data");
         if(!fd.exists())
             fd.mkdir();
+    }
 
+    public void restorePersistent() {
         //Read all LeashKnots
+        List<SerializableLocation> tempList = new ArrayList<>();
         try {
             File leFile = new File(this.plugin.getDataFolder(), "/data/LeashHitches");
             if (!leFile.exists()) {
@@ -33,7 +38,7 @@ public class PersistencyHelper {
             } else {
                 FileInputStream fin= new FileInputStream(leFile);
                 ObjectInputStream ois = new ObjectInputStream(fin);
-                this.leashKnotList= (ArrayList<SerializableLocation>)ois.readObject();
+                tempList = (ArrayList<SerializableLocation>)ois.readObject();
                 fin.close();
             }
         } catch(Exception e) {
@@ -41,9 +46,9 @@ public class PersistencyHelper {
         }
         //Add all LeashHitches back
         boolean actuallyRestored = false;
-        for(SerializableLocation loc:leashKnotList) {
+        for(SerializableLocation loc:tempList) {
             actuallyRestored = true;
-            LeashController.createHitch(loc.toLocation().getBlock(),false);
+            LeashController.createHitch(loc.toLocation().getBlock());
         }
 
         //Read all Silent
@@ -58,6 +63,23 @@ public class PersistencyHelper {
                 fin.close();
 
                 if(!this.plugin.silent.isEmpty())
+                    actuallyRestored = true;
+            }
+        } catch(Exception e) {
+            //Ignore
+        }
+        //Refill batMap
+        try {
+            File leFile = new File(this.plugin.getDataFolder(), "/data/BatMap");
+            if (!leFile.exists()) {
+                leFile.createNewFile();
+            } else {
+                FileInputStream fin= new FileInputStream(leFile);
+                ObjectInputStream ois = new ObjectInputStream(fin);
+                LeashController.setBatMap((HashMap<UUID, BatContainer>)ois.readObject());
+                fin.close();
+
+                if(!LeashController.getBatMap().isEmpty())
                     actuallyRestored = true;
             }
         } catch(Exception e) {
@@ -97,11 +119,25 @@ public class PersistencyHelper {
         } catch(Exception e) {
             //Ignore
         }
+
+        //Write BatMap
+        try {
+            File leFile = new File(this.plugin.getDataFolder(), "/data/BatMap");
+            if (!leFile.exists()) {
+                leFile.createNewFile();
+            } else {
+                FileOutputStream fout= new FileOutputStream(leFile);
+                ObjectOutputStream oos = new ObjectOutputStream(fout);
+                oos.writeObject(LeashController.getBatMap());
+                fout.close();
+            }
+        } catch(Exception e) {
+            //Ignore
+        }
     }
+
     public void addHitch(LeashHitch hitch) {
         this.leashKnotList.add(new SerializableLocation(hitch.getLocation()));
     }
-    public void deleteHitch(LeashHitch hitch) { this.leashKnotList.remove(new SerializableLocation(hitch.getLocation())); }
-
-    //TODO: Add Persistency for metadata or something... Maybe save the pairs
+    public void deleteHitch(LeashHitch hitch) {this.leashKnotList.remove(new SerializableLocation(hitch.getLocation()));}
 }

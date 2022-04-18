@@ -1,27 +1,44 @@
 package de.jakllp.jaklutils.leashing;
 
+import de.jakllp.jaklutils.helpers.customdatatypes.BatContainer;
 import de.jakllp.jaklutils.helpers.customdatatypes.StatValue;
 import de.jakllp.jaklutils.main.JaklUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.entity.*;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.UUID;
+
 public class LeashController {
+    private static HashMap<UUID, BatContainer> batMap = new HashMap();
+
     public static boolean createFirstPoint(Player player) {
-        return createFirstPoint(player, player.getLocation());
+        return createFirstPoint(player, player.getLocation(),false);
     }
 
     public static boolean createFirstPoint(Player player, Block block) {
-        return createFirstPoint(player, block.getBoundingBox().getCenter().toLocation(block.getWorld()).subtract(0,0,0.1875));
+        Location loc = block.getLocation();
+        Location loc2 = new Location(loc.getWorld(), loc.getBlockX()+0.5, block.getBoundingBox().getCenter().toLocation(block.getWorld()).getY(), loc.getBlockZ()+0.3125);
+
+        return createFirstPoint(player, loc2, true);
     }
 
-    public static boolean createFirstPoint(Player player, Location loc) {
+    public static boolean createFirstPoint(Player player, Location loc, boolean onFence) {
         if(player.isEmpty()) {
             //Spawn the bats
             Bat bat1 = (Bat) player.getWorld().spawnEntity(loc, EntityType.BAT);
             Bat bat2 = (Bat) player.getWorld().spawnEntity(player.getLocation(), EntityType.BAT);
             giveBatTreatment(bat1);
             giveBatTreatment(bat2);
+
+            bat1.setAwake(true);
+            if(onFence) {
+                bat1.teleport(loc.subtract(0,0.4,0));
+            }
 
             //Link bats and such
             player.addPassenger(bat2);
@@ -46,22 +63,34 @@ public class LeashController {
     }
 
     public static boolean createSecondPoint(Player player) {
-        return createSecondPoint(player, player.getLocation());
+        return createSecondPoint(player, player.getLocation(), false);
     }
 
     public static boolean createSecondPoint(Player player, Block block) {
-        return createSecondPoint(player, block.getBoundingBox().getCenter().toLocation(block.getWorld()).add(0,0.2,0));
+        Location loc = block.getLocation();
+        Location loc2 = new Location(loc.getWorld(), loc.getBlockX()+0.5, block.getBoundingBox().getCenter().toLocation(block.getWorld()).getY(), loc.getBlockZ()+0.5);
+
+        return createSecondPoint(player, loc2,true);
     }
 
-    public static boolean createSecondPoint(Player player, Location loc) {
+    public static boolean createSecondPoint(Player player, Location loc, boolean onFence) {
         Bat leBat = findBatOnPLayer(player);
         if(leBat != null) {
             //Move the bat
             player.removePassenger(leBat);
-            leBat.teleport(loc);
+            leBat.setAwake(true);
+            if(onFence) {
+                leBat.teleport(loc.subtract(0,0.265,0));
+            } else {
+                leBat.teleport(loc.add(0,0.15,0));
+            }
 
             //Get other bat
             Bat leFirstBat = (Bat) ((StatValue)leBat.getMetadata("leLeash").get(0)).getValue();
+
+            batMap.put(leFirstBat.getUniqueId(),new BatContainer(true,leBat.getUniqueId(),leFirstBat.getUniqueId()));
+            batMap.put(leBat.getUniqueId(), new BatContainer(false,leFirstBat.getUniqueId(),leBat.getUniqueId()));
+
             //Make both persistent
             leBat.setPersistent(true);
             leFirstBat.setPersistent(true);
@@ -77,7 +106,10 @@ public class LeashController {
         return false;
     }
 
-    public static boolean createHitch(Block block, boolean needsPersistent) {
+    public static boolean createHitch(Block block) {
+        if(!block.getType().name().toLowerCase().contains("fence")) {
+            return false;
+        }
         for(Entity entity: block.getWorld().getNearbyEntities(block.getLocation(),1,1,1)) {
             if(entity instanceof LeashHitch) {
                 return true;
@@ -85,9 +117,7 @@ public class LeashController {
         }
         try {
             LeashHitch leHitch = (LeashHitch) block.getWorld().spawnEntity(block.getLocation(), EntityType.LEASH_HITCH);
-            if(needsPersistent) {
-                JaklUtils.plugin.persistent.addHitch(leHitch);
-            }
+            JaklUtils.plugin.persistent.addHitch(leHitch);
             leHitch.setMetadata("jaklHitch",new StatValue(null, JaklUtils.plugin));
             return true;
         } catch (Exception e) {
@@ -121,26 +151,32 @@ public class LeashController {
 
     public static void removeLeash(LeashHitch hitchy) {
         for(Entity ent:hitchy.getNearbyEntities(1,1,1)) {
-            if(ent.hasMetadata("leFirstBat")) {
+            BatContainer leBatContainer = batMap.get(ent.getUniqueId());
+            if(leBatContainer != null && leBatContainer.isFirst()) {
                 removeLeash((Bat) ((Bat)ent).getLeashHolder(), (Bat) ent, false, true);
             }
-            if(ent.hasMetadata("leLeash")) {
-                removeLeash((Bat) ent, (Bat) ((StatValue)ent.getMetadata("leLeash").get(0)).getValue(), true, false);
+            if(leBatContainer != null) {
+                removeLeash((Bat) ent, (Bat) ent.getServer().getEntity(leBatContainer.getPartner()), true, false);
             }
         }
         deleteHitch(hitchy);
     }
     public static void removeLeash(Bat leBat) {
+        BatContainer leBatContainer = batMap.get(leBat.getUniqueId());
         //Make sure first and second aren't swapped
-        if(leBat.hasMetadata("leFirstBat")) {
+        if(leBatContainer != null && leBatContainer.isFirst()) {
             removeLeash((Bat) leBat.getLeashHolder(), leBat, true, true);
         } else {
-            removeLeash(leBat, (Bat) ((StatValue)leBat.getMetadata("leLeash").get(0)).getValue(), true, true);
+            removeLeash(leBat, (Bat) leBat.getServer().getEntity(leBatContainer.getPartner()), true, true);
         }
     }
     private static void removeLeash(Bat leSecondBat, Bat leFirstBat, boolean needsFirstCheck, boolean needsSecondCheck) {
         LeashHitch firstHitch = getHitch(leFirstBat);
         LeashHitch secondHitch = getHitch(leSecondBat);
+
+        //Remove it from batMap
+        batMap.remove(leFirstBat.getUniqueId());
+        batMap.remove(leSecondBat.getUniqueId());
 
         leFirstBat.setLeashHolder(null);
         leSecondBat.remove();
@@ -169,12 +205,29 @@ public class LeashController {
     }
     private static boolean canDeleteHitch(LeashHitch hitch) {
         for(Entity ent:hitch.getNearbyEntities(1,1,1)) {
-            if(ent.hasMetadata("leLeash") || ent.hasMetadata("leFirstBat")) {
+            if(isInBatMap(ent.getUniqueId())) {
                 return false;
             }
         }
         return true;
     }
 
-    //TODO: Need to save bat pairs differently somehow... Metadata isn't persistent
+    public static boolean isInBatMap(UUID uuid) {
+        if (batMap.containsKey(uuid)) {
+            return true;
+        }
+        return false;
+    }
+    public static boolean isInBatMap(Entity ent) {
+        if (batMap.containsKey(ent.getUniqueId())) {
+            return true;
+        }
+        return false;
+    }
+    public static HashMap<UUID, BatContainer> getBatMap() {
+        return batMap;
+    }
+    public static void setBatMap(HashMap<UUID,BatContainer> map) {
+        batMap = map;
+    }
 }

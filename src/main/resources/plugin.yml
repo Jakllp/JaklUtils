@@ -9,6 +9,8 @@ commands:
     description: Creates a point of a Leash
   toggleLeash:
     description: Toggles Fence-Leashing
+  toggleKnot:
+    description: Toggles Fence-Knotting
   jaklsilent:
     description: Silences unimportant messages from this plugin
   abortleash:

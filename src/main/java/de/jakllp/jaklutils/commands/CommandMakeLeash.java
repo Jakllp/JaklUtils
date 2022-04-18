@@ -21,7 +21,11 @@ public class CommandMakeLeash implements CommandTabCompleter {
                     player.sendMessage(JaklUtils.colors.getSuccess()+"Leash created!");
                 } else {
                     worked = LeashController.createFirstPoint(player);
-                    player.sendMessage(JaklUtils.colors.getSuccess()+"First Point created! Click on a fence or do /makeLeash");
+                    if(player.hasMetadata("leashingOn")) {
+                        player.sendMessage(JaklUtils.colors.getSuccess()+"First Point created! Click on a fence or do /makeLeash to finish your leash");
+                    } else {
+                        player.sendMessage(JaklUtils.colors.getSuccess()+"First Point created! Do /makeLeash to finish your leash");
+                    }
                 }
 
                 if(!worked) {

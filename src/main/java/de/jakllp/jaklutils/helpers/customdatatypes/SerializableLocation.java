@@ -8,15 +8,15 @@ import java.util.UUID;
 
 public class SerializableLocation implements Serializable {
     public UUID worldId;
-    public double x;
-    public double y;
-    public double z;
+    public int x;
+    public int y;
+    public int z;
 
     public SerializableLocation(Location loc) {
         this.worldId = loc.getWorld().getUID();
-        this.x = loc.getX();
-        this.y = loc.getY();
-        this.z = loc.getZ();
+        this.x = loc.getBlockX();
+        this.y = loc.getBlockY();
+        this.z = loc.getBlockZ();
     }
 
     public Location toLocation() {

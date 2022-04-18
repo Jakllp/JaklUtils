@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 
@@ -21,22 +22,35 @@ public class LeashListener implements Listener {
 
     @EventHandler
     void leashFenceListener(PlayerInteractEvent event) {
-        if(event.getClickedBlock() != null && event.getPlayer().hasMetadata("leashingOn")) {
-            Block block = event.getClickedBlock();
-            Player player = event.getPlayer();
+        Block block = event.getClickedBlock();
+        Player player = event.getPlayer();
+        if(block != null && player.hasMetadata("leashingOn") && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             //Is this really a Fence
             if(block.getType().name().toUpperCase().contains("FENCE") && player.getInventory().getItemInMainHand().getType() == Material.LEAD
                     && !block.hasMetadata("inLeashing")) {
                 //If first leash-point can be created
-                if(LeashController.createFirstPoint(player, block) && LeashController.createHitch(block,true)) {
+                if(LeashController.createFirstPoint(player, block) && LeashController.createHitch(block)) {
                     block.setMetadata("inLeashing", new StatValue(null, this.plugin));
                     if(!JaklUtils.isSilent(player)) {
                         player.sendMessage(JaklUtils.colors.getSuccess()+"First point made! Click on another fence or do /makeLeash");
                     }
                 } else if(player.hasMetadata("inLeashing")
-                        && LeashController.createSecondPoint(player, block) && LeashController.createHitch(block, true)) {
+                        && LeashController.createSecondPoint(player, block) && LeashController.createHitch(block)) {
                     if(!JaklUtils.isSilent(player)) {
                         player.sendMessage(JaklUtils.colors.getSuccess()+"Leash created!");
+                    }
+                } else {
+                    player.sendMessage(JaklUtils.colors.getError()+"Something went wrong!");
+                }
+            }
+        }
+        if(block != null && player.hasMetadata("knottingOn") && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            //Is this really a Fence
+            if (block.getType().name().toUpperCase().contains("FENCE") && player.getInventory().getItemInMainHand().getType() == Material.LEAD
+                    && !block.hasMetadata("inLeashing")) {
+                if(LeashController.createHitch(block)) {
+                    if(!JaklUtils.isSilent(player)) {
+                        player.sendMessage(JaklUtils.colors.getSuccess()+"Knot created");
                     }
                 } else {
                     player.sendMessage(JaklUtils.colors.getError()+"Something went wrong!");
@@ -62,20 +76,11 @@ public class LeashListener implements Listener {
 
     @EventHandler
     void onLeashBreak(EntityDamageByEntityEvent event) {
-        Entity entity = event.getEntity();
-        if(entity instanceof Bat && (entity.hasMetadata("leLeash") || entity.hasMetadata("leFirstBat"))) {
-            LeashController.removeLeash((Bat) entity);
-            return;
-        }
-        if(entity instanceof LeashHitch && (entity.hasMetadata("jaklHitch"))) {
-            LeashController.removeLeash((LeashHitch) entity);
-            return;
-        }
+        if(event.getDamager() instanceof Player && (event.getDamager().isOp() || event.getDamager().hasPermission("JaklUtils.leashCreator")))
+            handleLeashBreak(event.getEntity());
     }
-    @EventHandler
-    void onLeashBreakButDead(EntityDeathEvent event) {
-        Entity entity = event.getEntity();
-        if(entity instanceof Bat && (entity.hasMetadata("leLeash") || entity.hasMetadata("leFirstBat"))) {
+    private void handleLeashBreak(Entity entity) {
+        if(entity instanceof Bat && LeashController.isInBatMap(entity)) {
             LeashController.removeLeash((Bat) entity);
             return;
         }

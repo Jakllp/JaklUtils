@@ -1,9 +1,6 @@
 package de.jakllp.jaklutils.main;
 
-import de.jakllp.jaklutils.commands.CommandAbortLeash;
-import de.jakllp.jaklutils.commands.CommandMakeLeash;
-import de.jakllp.jaklutils.commands.CommandSilenceMe;
-import de.jakllp.jaklutils.commands.CommandToggleLeash;
+import de.jakllp.jaklutils.commands.*;
 import de.jakllp.jaklutils.helpers.PersistencyHelper;
 import de.jakllp.jaklutils.listeners.LeashListener;
 import de.jakllp.jaklutils.logging.Colors;
@@ -46,6 +43,7 @@ public class JaklUtils extends JavaPlugin {
 
         leashListener = new LeashListener(this);
         persistent = new PersistencyHelper(plugin);
+        persistent.restorePersistent();
 
         // register commands
         //getCommand("JaklUtils").setExecutor(new CommandHelp());
@@ -53,6 +51,7 @@ public class JaklUtils extends JavaPlugin {
         getCommand("jaklsilent").setExecutor(new CommandSilenceMe());
         getCommand("makeleash").setExecutor(new CommandMakeLeash());
         getCommand("toggleleash").setExecutor(new CommandToggleLeash());
+        getCommand("toggleknot").setExecutor(new CommandToggleKnotting());
 
         logger.info("JaklUtils loaded!");
     }
