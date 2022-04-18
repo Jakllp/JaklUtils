@@ -110,7 +110,7 @@ public class LeashController {
         if(!block.getType().name().toLowerCase().contains("fence")) {
             return false;
         }
-        for(Entity entity: block.getWorld().getNearbyEntities(block.getLocation(),1,1,1)) {
+        for(Entity entity: block.getWorld().getNearbyEntities(block.getLocation(),0.5,0.5,0.5)) {
             if(entity instanceof LeashHitch) {
                 return true;
             }
@@ -150,7 +150,7 @@ public class LeashController {
     }
 
     public static void removeLeash(LeashHitch hitchy) {
-        for(Entity ent:hitchy.getNearbyEntities(1,1,1)) {
+        for(Entity ent:hitchy.getNearbyEntities(0.5,0.5,0.5)) {
             BatContainer leBatContainer = batMap.get(ent.getUniqueId());
             if(leBatContainer != null && leBatContainer.isFirst()) {
                 removeLeash((Bat) ((Bat)ent).getLeashHolder(), (Bat) ent, false, true);
@@ -196,7 +196,7 @@ public class LeashController {
     }
 
     private static LeashHitch getHitch(Bat bat) {
-        for(Entity ent:bat.getNearbyEntities(1,1,1)) {
+        for(Entity ent:bat.getNearbyEntities(0.5,0.5,0.5)) {
             if(ent.hasMetadata("jaklHitch") && ent instanceof LeashHitch) {
                 return (LeashHitch) ent;
             }
@@ -204,7 +204,7 @@ public class LeashController {
         return null;
     }
     private static boolean canDeleteHitch(LeashHitch hitch) {
-        for(Entity ent:hitch.getNearbyEntities(1,1,1)) {
+        for(Entity ent:hitch.getNearbyEntities(0.5,0.5,0.5)) {
             if(isInBatMap(ent.getUniqueId())) {
                 return false;
             }
