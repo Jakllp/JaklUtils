@@ -1,7 +1,7 @@
 name: JaklUtils
 main: de.jakllp.jaklutils.main.JaklUtils
 version: ${project.version}
-api-version: 1.13
+api-version: 1.17
 commands:
   JaklUtils:
     description: Help for all Commands

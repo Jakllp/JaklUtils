@@ -5,23 +5,13 @@ import de.jakllp.jaklutils.helpers.PersistencyHelper;
 import de.jakllp.jaklutils.listeners.LeashListener;
 import de.jakllp.jaklutils.logging.Colors;
 import de.jakllp.jaklutils.logging.CustomLogger;
-import de.jakllp.jaklutils.reflection.ReflectionUtil;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
-import org.bukkit.Bukkit;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class JaklUtils extends JavaPlugin {
     public static JaklUtils plugin;
@@ -52,6 +42,10 @@ public class JaklUtils extends JavaPlugin {
         getCommand("makeleash").setExecutor(new CommandMakeLeash());
         getCommand("toggleleash").setExecutor(new CommandToggleLeash());
         getCommand("toggleknot").setExecutor(new CommandToggleKnotting());
+
+        //bStats
+        int pluginId = 14990;
+        Metrics metrics = new Metrics(this, pluginId);
 
         logger.info("JaklUtils loaded!");
     }

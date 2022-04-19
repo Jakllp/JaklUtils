@@ -3,14 +3,11 @@ package de.jakllp.jaklutils.leashing;
 import de.jakllp.jaklutils.helpers.customdatatypes.BatContainer;
 import de.jakllp.jaklutils.helpers.customdatatypes.StatValue;
 import de.jakllp.jaklutils.main.JaklUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.entity.*;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.UUID;
 
 public class LeashController {
@@ -93,7 +90,9 @@ public class LeashController {
 
             //Make both persistent
             leBat.setPersistent(true);
+            leBat.setRemoveWhenFarAway(false);
             leFirstBat.setPersistent(true);
+            leFirstBat.setRemoveWhenFarAway(false);
 
             //Remove metadata of first block if it has it
             if(leFirstBat.getLocation().getBlock().hasMetadata("inLeashing")) {

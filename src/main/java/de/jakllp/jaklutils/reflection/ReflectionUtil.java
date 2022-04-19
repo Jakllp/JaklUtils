@@ -1,7 +1,5 @@
 package de.jakllp.jaklutils.reflection;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,7 +43,7 @@ public class ReflectionUtil {
         }
     }
 
-    public static Object getFieldValue(@NonNull Field field, Object target) {
+    public static Object getFieldValue(Field field, Object target) {
         try {
             return field.get(target);
         } catch (Throwable ignored) {
@@ -53,7 +51,7 @@ public class ReflectionUtil {
         return null;
     }
 
-    public static boolean setFieldValue(@NonNull Field field, Object target, Object value) {
+    public static boolean setFieldValue(Field field, Object target, Object value) {
         try {
             field.set(target, value);
             return true;
@@ -94,7 +92,7 @@ public class ReflectionUtil {
         return false;
     }
 
-    public static boolean setFinalFieldValue(@NonNull Field field, Object target, Object value) {
+    public static boolean setFinalFieldValue(Field field, Object target, Object value) {
         try {
             field.setAccessible(true);
 
@@ -111,7 +109,7 @@ public class ReflectionUtil {
         return false;
     }
 
-    public static void setFinalStaticValue(@NonNull Field field, Object newValue) throws NoSuchFieldException, IllegalAccessException {
+    public static void setFinalStaticValue(Field field, Object newValue) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
 
         Field modifiersField = Field.class.getDeclaredField("modifiers");
